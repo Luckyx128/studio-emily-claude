@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(CLIENT)
+  createdAt DateTime @default(now())
+}
+
+model DaySchedule {
+  id        String   @id @default(cuid())
+  date      String   @unique
+  available Boolean  @default(true)
+  slots     Slot[]
+}
+
+model Slot {
+  id            String      @id @default(cuid())
+  dayScheduleId String
+  daySchedule   DaySchedule @relation(fields: [dayScheduleId], references: [id], onDelete: Cascade)
+  time          String
+  free          Boolean     @default(true)
+  booking       Booking?
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  slotId    String        @unique
+  slot      Slot          @relation(fields: [slotId], references: [id])
+  name      String
+  phone     String
+  service   String
+  price     String
+  status    BookingStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}

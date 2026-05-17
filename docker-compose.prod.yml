@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    networks:
+      - studio-network
+    environment:
+      POSTGRES_DB: studio_emily
+      POSTGRES_USER: ${POSTGRES_USER:-emily}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-emily} -d studio_emily"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - studio-network
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-emily}:${POSTGRES_PASSWORD}@db:5432/studio_emily
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?Defina NEXTAUTH_SECRET no .env}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-emily@studio.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Defina ADMIN_PASSWORD no .env}
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  studio-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

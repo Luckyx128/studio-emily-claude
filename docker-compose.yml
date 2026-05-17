@@ -1,0 +1,58 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks:
+      - studio-network
+    environment:
+      POSTGRES_DB: studio_emily
+      POSTGRES_USER: emily
+      POSTGRES_PASSWORD: emily123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U emily -d studio_emily"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  app:
+    image: node:22-alpine
+    working_dir: /app
+    restart: unless-stopped
+    networks:
+      - studio-network
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - next_cache:/app/.next
+    environment:
+      DATABASE_URL: postgresql://emily:emily123@db:5432/studio_emily
+      NEXTAUTH_SECRET: dev-secret-troque-em-producao
+      NEXTAUTH_URL: http://localhost:3000
+      ADMIN_EMAIL: emily@studio.com
+      ADMIN_PASSWORD: emily123
+      NODE_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "npm install &&
+             npx prisma generate &&
+             npx prisma db push &&
+             node prisma/seed.js &&
+             npm run dev"
+
+networks:
+  studio-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  node_modules:
+  next_cache:
