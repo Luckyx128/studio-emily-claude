@@ -16,9 +16,9 @@ model User {
 }
 
 model DaySchedule {
-  id        String   @id @default(cuid())
-  date      String   @unique
-  available Boolean  @default(true)
+  id        String  @id @default(cuid())
+  date      String  @unique
+  available Boolean @default(true)
   slots     Slot[]
 }
 
