@@ -10,9 +10,9 @@ export function Nav() {
   const isAdmin = (session?.user as { role?: string })?.role === 'ADMIN'
 
   return (
-    <nav style={{ background: 'var(--darker)', height: 56 }}
+    <nav style={{ background: 'var(--blush)', height: 56 }}
       className="px-8 flex items-center justify-between">
-      <span style={{ fontFamily: 'var(--font-playfair)', color: 'var(--blush)', fontSize: 20, letterSpacing: 1 }}>
+      <span style={{ fontFamily: 'var(--font-playfair)', color: 'var(--darker)', fontSize: 28, letterSpacing: 1, fontWeight: 700 }}>
         Studio Emily
       </span>
 
@@ -46,8 +46,8 @@ export function Nav() {
 function NavTab({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
   return (
     <Link href={href} style={{
-      color: active ? 'var(--white)' : 'var(--rose)',
-      background: active ? 'rgba(232,201,184,0.2)' : 'none',
+      color: active ? 'var(--white)' : 'var(--darker)',
+      background: active ? 'var(--darker)' : 'none',
       fontSize: 13, letterSpacing: 1.5, textTransform: 'uppercase',
       padding: '8px 16px', borderRadius: 4, textDecoration: 'none',
       fontFamily: 'var(--font-lato)',

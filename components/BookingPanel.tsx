@@ -25,6 +25,15 @@ export function BookingPanel({ selectedDate, slots, onBooked }: Props) {
   const [selectedService, setSelectedService] = useState<{ name: string; price: string } | null>(null)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 11)
+    let masked = digits
+    if (digits.length > 0) masked = '(' + digits
+    if (digits.length > 2) masked = '(' + digits.slice(0, 2) + ') ' + digits.slice(2)
+    if (digits.length > 7) masked = '(' + digits.slice(0, 2) + ') ' + digits.slice(2, 7) + '-' + digits.slice(7)
+    setPhone(masked)
+  }
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
@@ -67,7 +76,7 @@ export function BookingPanel({ selectedDate, slots, onBooked }: Props) {
 
   return (
     <div style={{ background: 'var(--white)', border: '0.5px solid var(--border)', borderRadius: 12, overflow: 'hidden' }}>
-      <div style={{ background: 'var(--rose)', padding: '14px 18px' }}>
+      <div style={{ background: 'var(--blush)', padding: '7px 18px' }}>
         <div style={{ fontFamily: 'var(--font-playfair)', fontSize: 16, color: 'var(--darker)', textTransform: 'capitalize' }}>{dateTitle}</div>
         <div style={{ fontSize: 12, color: 'var(--dark)', marginTop: 2 }}>{dateSub}</div>
       </div>
@@ -126,7 +135,7 @@ export function BookingPanel({ selectedDate, slots, onBooked }: Props) {
         </div>
         <div style={{ marginBottom: 18 }}>
           <label style={sectionLabel}>WhatsApp</label>
-          <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="(41) 99999-0000" style={inputStyle} type="tel" />
+          <input value={phone} onChange={handlePhoneChange} placeholder="(41) 99999-9999" style={inputStyle} type="tel" />
         </div>
 
         {success && (
